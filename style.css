@@ -24,10 +24,11 @@ body {
     background-image: url('pacman.png');
 }
 #map {
-    margin-left: 500px;
+    margin-left: 350px;
     position: absolute;
     width: 1200px;
     height: 930px;
+    background-image: url('main_menu_background.png');
 }
 #score_tab {
     color: mintcream;
@@ -77,6 +78,14 @@ h2 {
     position: absolute;
     color: white;
 }
-
+#newGame {
+    position: absolute;
+    color: black;
+    font-size: 30px;
+    border-radius: 10px;
+    background: yellow;
+    margin-top: 435px;
+    margin-left: 500px;
+}
 
 

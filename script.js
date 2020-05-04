@@ -3,7 +3,6 @@ let gameArea;
 let score = 0;
 let lives = 3;
 let myMusic;
-//let ghostDirections = [1,2,3,4];
 let field = [
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,2,2,2,2,2,2,2,2,2,2,2,2,0,0,2,2,2,2,2,2,2,2,2,2,2,2,0],
@@ -96,20 +95,28 @@ function movePacmanToOtherPosition(e) {
         }
     }
 }
-/*function movingGhost(){
-    while(lives > 0){
-        let ghostDirection = ghostDirections[Math.floor(Math.random() * ghostDirections.length)];
-        if(ghostDirection = 1){
+function movingGhost(){
+    if(lives > 0){
+        let ghostDirection = Math.floor(Math.random() * 4 + 1);
+        if(ghostDirection === 1 && field[ghost.y][ghost.x - 1] !== 0){
             ghost.x = ghost.x - 1;
-        } else if (ghostDirection = 2){
+        } else if (ghostDirection === 2 && field[ghost.y][ghost.x + 1] !== 0){
             ghost.x = ghost.x + 1;
-        } else if (ghostDirection = 3){
+        } else if (ghostDirection === 3  && field[ghost.y + 1][ghost.x] !== 0){
             ghost.y = ghost.y + 1;
-        } else {
+        } else if(ghostDirection === 4  && field[ghost.y - 1][ghost.x] !== 0){
             ghost.y = ghost.y -1;
         }
+        animateGhost();
     }
-}*/
+}
+
+function animateGhost() {
+    $('#ghost').animate({
+        top: ghost.y * blockSize,
+        left: ghost.x * blockSize
+    }, 0);
+}
 
 function animatePac(){
     $('#pacman').animate({
@@ -165,6 +172,23 @@ function sound(src) {
         this.sound.pause();
     }
 }
+function startNewGame() {
+    $('#map').css("background-image", "none");
+    $('#map').css("margin-left", "500px");
+    $('#newGame').css("display","none");
+    $('#list').css("display","none");
+
+    drawGameArea();
+    myMusic = new sound("original_music.mp3");
+    myMusic.play();
+    setInterval(movingGhost, 1000);
+    window.addEventListener('keydown', movePacmanToOtherPosition, false);
+    FillToplist();
+    gameArea.append('<div id="score_tab">Score:<span id="score" style="padding-left: 10px"></span></div>')
+    $('#score').text(score);
+    gameArea.append('<div id="lives_tab">Lives:<span id="lives" style="padding-left: 10px"></span></div>')
+    $('#lives').text(lives);
+}
 
 function YouLostThisGame(){
     gameArea.empty();
@@ -196,17 +220,7 @@ $(function () {
     gameArea.appendTo('body');
     gameArea.attr('id','map');
 
-    myMusic = new sound("original_music.mp3");
-    myMusic.play();
+    gameArea.append('<button id="newGame">New Game</button>');
+    $("#newGame").on('click', startNewGame);
 
-
-    drawGameArea();
-    //movingGhost();
-    window.addEventListener('keydown', movePacmanToOtherPosition, false);
-    FillToplist();
-
-    gameArea.append('<div id="score_tab">Score:<span id="score" style="padding-left: 10px"></span></div>')
-    $('#score').text(score);
-    gameArea.append('<div id="lives_tab">Lives:<span id="lives" style="padding-left: 10px"></span></div>')
-    $('#lives').text(lives);
 })
