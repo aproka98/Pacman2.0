@@ -175,6 +175,7 @@ function sound(src) {
 function startNewGame() {
     $('#map').css("background-image", "none");
     $('#map').css("margin-left", "500px");
+    $('#main_score').css("display","none");
     $('#newGame').css("display","none");
     $('#list').css("display","none");
 
@@ -182,8 +183,9 @@ function startNewGame() {
     myMusic = new sound("original_music.mp3");
     myMusic.play();
     setInterval(movingGhost, 1000);
+
     window.addEventListener('keydown', movePacmanToOtherPosition, false);
-    FillToplist();
+
     gameArea.append('<div id="score_tab">Score:<span id="score" style="padding-left: 10px"></span></div>')
     $('#score').text(score);
     gameArea.append('<div id="lives_tab">Lives:<span id="lives" style="padding-left: 10px"></span></div>')
@@ -192,14 +194,28 @@ function startNewGame() {
 
 function YouLostThisGame(){
     gameArea.empty();
-    gameArea.append('<div id="loser">LOSE</div style>');
+    myMusic.stop();
+    gameArea.append('<div id="loser">You lost this game, try again!</div style>');
+    gameArea.append('<button id="newGame">Try Again</button>');
+    $("#newGame").on('click', startNewGame);
 }
 function YouWonThisGame(){
     gameArea.empty();
+    myMusic.stop();
     gameArea.append('<div id="winner">WIN</div style>');
 }
 
 function FillToplist() {
+    gameArea.empty();
+    gameArea.append('<h2>Top 10</h2>');
+    gameArea.append('<p id="list"></p>');
+    gameArea.append('<button id="back">Back</button>');
+    $(document).ready(function(){
+        $("#back").click(function(){
+            location.reload(true);
+        });
+    });
+
     var data = [];
     for (let i = 0; i < localStorage.length; i++) {
         data[i] = [localStorage.key(i), parseInt(localStorage.getItem(localStorage.key(i)))];
@@ -222,5 +238,6 @@ $(function () {
 
     gameArea.append('<button id="newGame">New Game</button>');
     $("#newGame").on('click', startNewGame);
-
+    gameArea.append('<button id="main_score">Scores</button>');
+    $("#main_score").on('click', FillToplist);
 })
