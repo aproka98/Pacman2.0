@@ -3,6 +3,7 @@ let gameArea;
 let score = 0;
 let lives = 3;
 let myMusic;
+let mySound;
 let field = [
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,2,2,2,2,2,2,2,2,2,2,2,2,0,0,2,2,2,2,2,2,2,2,2,2,2,2,0],
@@ -17,9 +18,9 @@ let field = [
     [3,3,3,3,3,0,2,0,0,0,0,0,3,0,0,3,0,0,0,0,0,2,0,3,3,3,3,3],
     [3,3,3,3,3,0,2,0,0,3,3,3,3,3,3,3,3,3,3,0,0,2,0,3,3,3,3,3],
     [3,3,3,3,3,0,2,0,0,3,0,0,0,3,3,0,0,0,3,0,0,2,0,3,3,3,3,3],
-    [0,0,0,0,0,0,2,0,0,3,0,3,3,3,3,3,3,0,3,0,0,2,0,0,0,0,0,0],
-    [3,3,3,3,3,3,2,3,3,3,0,3,3,3,3,3,3,0,3,3,3,2,3,3,3,3,3,3],
-    [0,0,0,0,0,0,2,0,0,3,0,3,3,4,3,3,3,0,3,0,0,2,0,0,0,0,0,0],
+    [3,3,3,3,3,0,2,0,0,3,0,3,3,3,3,3,3,0,3,0,0,2,0,3,3,3,3,3],
+    [3,3,3,3,3,0,2,3,3,3,0,3,3,3,3,3,3,0,3,3,3,2,0,3,3,3,3,3],
+    [3,3,3,3,3,0,2,0,0,3,0,3,3,4,3,3,3,0,3,0,0,2,0,3,3,3,3,3],
     [3,3,3,3,3,0,2,0,0,3,0,0,0,0,0,0,0,0,3,0,0,2,0,3,3,3,3,3],
     [3,3,3,3,3,0,2,0,0,3,3,3,3,3,3,3,3,3,3,0,0,2,0,3,3,3,3,3],
     [3,3,3,3,3,0,2,0,0,3,0,0,0,0,0,0,0,0,3,0,0,2,0,3,3,3,3,3],
@@ -67,13 +68,13 @@ function drawGameArea(){
        }
    }
 }
+
 function movePacmanToOtherPosition(e) {
     let key = e.key;
     if (key === 'w') {
-        
-        if (field[pacman.y - 1][pacman.x]) {
-            pacman.y = pacman.y - 1;
-            animatePac();
+            if (field[pacman.y - 1][pacman.x]) {
+                pacman.y = pacman.y - 1;
+                animatePac();
         }
     }
     else if (key === 'a') {
@@ -95,6 +96,7 @@ function movePacmanToOtherPosition(e) {
         }
     }
 }
+
 function movingGhost(){
     if(lives > 0){
         let ghostDirection = Math.floor(Math.random() * 4 + 1);
@@ -110,12 +112,16 @@ function movingGhost(){
         animateGhost();
     }
 }
-
 function animateGhost() {
     $('#ghost').animate({
         top: ghost.y * blockSize,
         left: ghost.x * blockSize
     }, 0);
+}
+function distance(pacman, ghost){
+    dx = pacman.x - ghost.x;
+    dy = pacman.y - ghost.y;
+    return Math.sqrt(dx*dx + dy*dy);
 }
 
 function animatePac(){
@@ -141,15 +147,20 @@ function animatePac(){
             if($(this).css('top') === $('#pacman').css('top')
                 && $(this).css('left') === $('#pacman').css('left')) {
                 if(lives > 0){
+                    myMusic.stop();
+                    mySound.play();
                     lives -= 1;
+                    myMusic.play();
                     pacman = {
                         x:14,
                         y:23
-                    }} else {
+                    }
+                    animatePac();
+                } else {
                         YouLostThisGame();
                         let person = prompt("Adja meg a nevét:", "Anonym szeretnék maradni!");
                         localStorage.setItem(person, Number(score));
-                        FillToplist();
+
                 }
 
                 $('#lives').text(lives);
@@ -180,9 +191,10 @@ function startNewGame() {
     $('#list').css("display","none");
 
     drawGameArea();
+    mySound = new sound("losing_lives_music.mp3");
     myMusic = new sound("original_music.mp3");
     myMusic.play();
-    setInterval(movingGhost, 1000);
+    setInterval(movingGhost, 100);
 
     window.addEventListener('keydown', movePacmanToOtherPosition, false);
 
