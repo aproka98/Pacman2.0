@@ -1,12 +1,13 @@
 const blockSize = 30;           //blokkok méretei
 let gameArea;                   //játéktér
 let score = 0;                  //pontszám
+let key = 'd';                  //key alapértelemezett beállítása jobbra/ d billentyűre
 let lives = 3;                  //életek
 let myMusic;                    //háttérzene
 let mySound;                    //életvesztés hangeffektje
 const field = [                 //pálya tömb
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,2,2,2,2,2,2,2,2,2,2,2,2,0,0,2,2,2,2,2,2,2,2,2,2,2,2,0],
+    [0,6,2,2,2,2,2,2,2,2,2,2,2,0,0,2,2,2,2,2,2,2,2,2,2,2,6,0],
     [0,2,0,0,0,0,2,0,0,0,0,0,2,0,0,2,0,0,0,0,0,2,0,0,0,0,2,0],
     [0,2,0,0,0,0,2,0,0,0,0,0,2,0,0,2,0,0,0,0,0,2,0,0,0,0,2,0],
     [0,2,0,0,0,0,2,0,0,0,0,0,2,0,0,2,0,0,0,0,0,2,0,0,0,0,2,0],
@@ -18,11 +19,11 @@ const field = [                 //pálya tömb
     [0,0,0,0,0,0,2,0,0,0,0,0,3,0,0,3,0,0,0,0,0,2,0,0,0,0,0,0],
     [3,3,3,3,3,0,2,0,0,0,0,0,3,0,0,3,0,0,0,0,0,2,0,3,3,3,3,3],
     [3,3,3,3,3,0,2,0,0,3,3,3,3,3,3,3,3,3,3,0,0,2,0,3,3,3,3,3],
-    [3,3,3,3,3,0,2,0,0,3,0,0,0,3,3,0,0,0,3,0,0,2,0,3,3,3,3,3],
+    [3,3,3,3,3,0,2,0,0,3,0,0,3,3,3,3,0,0,3,0,0,2,0,3,3,3,3,3],
     [0,0,0,0,0,0,2,0,0,3,0,3,3,3,3,3,3,0,3,0,0,2,0,0,0,0,0,0],
-    [3,3,3,3,3,3,2,3,3,3,0,3,3,3,3,3,3,0,3,3,3,2,3,3,3,3,3,3],
-    [0,0,0,0,0,0,2,0,0,3,0,3,3,4,3,3,3,0,3,0,0,2,0,0,0,0,0,0],
-    [3,3,3,3,3,0,2,0,0,3,0,0,0,0,0,0,0,0,3,0,0,2,0,3,3,3,3,3],
+    [3,3,3,3,3,3,2,3,3,3,0,3,3,4,3,3,3,0,3,3,3,2,3,3,3,3,3,3],
+    [0,0,0,0,0,0,2,0,0,3,0,3,3,3,3,3,3,0,3,0,0,2,0,0,0,0,0,0],
+    [3,3,3,3,3,0,2,0,0,3,0,0,3,3,3,3,0,0,3,0,0,2,0,3,3,3,3,3],
     [3,3,3,3,3,0,2,0,0,3,3,3,3,3,3,3,3,3,3,0,0,2,0,3,3,3,3,3],
     [3,3,3,3,3,0,2,0,0,3,0,0,0,0,0,0,0,0,3,0,0,2,0,3,3,3,3,3],
     [0,0,0,0,0,0,2,0,0,3,0,0,0,0,0,0,0,0,3,0,0,2,0,0,0,0,0,0],
@@ -35,7 +36,7 @@ const field = [                 //pálya tömb
     [0,2,2,2,2,2,2,0,0,2,2,2,2,0,0,2,2,2,2,0,0,2,2,2,2,2,2,0],
     [0,2,0,0,0,0,0,0,0,0,0,0,2,0,0,2,0,0,0,0,0,0,0,0,0,0,2,0],
     [0,2,0,0,0,0,0,0,0,0,0,0,2,0,0,2,0,0,0,0,0,0,0,0,0,0,2,0],
-    [0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0],
+    [0,6,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,6,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 ]
 const mapSize = {               //pálya mérete
@@ -59,7 +60,9 @@ function drawGameArea(){
                block.addClass('wall');
            } else if(field[x][y] === 2){
                block.addClass('coin');
-           }  else if (field[x][y] === 4){
+           }  else if(field[x][y] === 6){
+               block.addClass('cherry');
+           } else if (field[x][y] === 4){
                block.attr('id', 'ghost');
            } else if (field[x][y] === 5) {
                block.attr('id', 'pacman');
@@ -74,7 +77,7 @@ function drawGameArea(){
        }
    }
 }
-let key = 'd';          //key alapértelemezett beállítása jobbra/ d billentyűre
+
 //irány bekérése
 function setPacmanDirection(e) {
     key = e.key;
@@ -84,7 +87,6 @@ function movePacmanToOtherPosition() {
     //ha a pacman bal oldalt kimenne a pályáról, akkor jobbról jöjjön be (valamiért nem működik, nem tudtam rájönni miért nem)
     if(pacman.x === 0){
         pacman.x = mapSize.x;
-        animatePac();
     }
     //ha a pacman jobb oldalt kimenne a pályáról, akkor balról jöjjön be
     if(pacman.x === mapSize.x){
@@ -118,25 +120,166 @@ function movePacmanToOtherPosition() {
 //szellem mozgatása - kicsit bután, random számot kap és a szám alapján elindul a hozzárendelt irányba
 function movingGhost(){
     if(lives > 0){
-        let ghostDirection = Math.floor(Math.random() * 4 + 1);
-        if(ghostDirection === 1 && field[ghost.y][ghost.x - 1] !== 0){
-            ghost.x = ghost.x - 1;
-        } else if (ghostDirection === 2 && field[ghost.y][ghost.x + 1] !== 0){
-            ghost.x = ghost.x + 1;
-        } else if (ghostDirection === 3  && field[ghost.y + 1][ghost.x] !== 0){
-            ghost.y = ghost.y + 1;
-        } else if(ghostDirection === 4  && field[ghost.y - 1][ghost.x] !== 0){
-            ghost.y = ghost.y -1;
+        if(ghost.x < pacman.x){
+            if(field[ghost.y][ghost.x + 1] !== 0 && ghost.x !== 28){
+                ghost.x = ghost.x + 1;
+            } else if(ghost.y < pacman.y){
+                if(field[ghost.y + 1][ghost.x] !== 0){
+                    ghost.y = ghost.y + 1;
+                }
+            } else if(ghost.y > pacman.y){
+                if(field[ghost.y - 1][ghost.x] !== 0){
+                    ghost.y = ghost.y -1;
+                }
+            }
         }
+        else if (ghost.y === pacman.y){
+            if(ghost.x !== pacman.x){
+                if(ghost.x < pacman.x){
+                    if(field[ghost.y][ghost.x + 1] !== 0 && ghost.x !== 28){
+                        ghost.x = ghost.x + 1;
+                    } else if(ghost.y < pacman.y){
+                        if(field[ghost.y + 1][ghost.x] !== 0){
+                            ghost.y = ghost.y + 1;
+                        }
+                    } else if(ghost.y > pacman.y){
+                        if(field[ghost.y - 1][ghost.x] !== 0){
+                            ghost.y = ghost.y -1;
+                        }
+                    }
+                }
+                else if (ghost.x >pacman.x) {
+                    if(field[ghost.y][ghost.x - 1] !== 0 && ghost.x !== 0){
+                        ghost.x = ghost.x - 1;
+                    } else if(ghost.y < pacman.y){
+                        if(field[ghost.y + 1][ghost.x] !== 0){
+                            ghost.y = ghost.y + 1;
+                        }
+                    } else if(ghost.y > pacman.y){
+                        if(field[ghost.y - 1][ghost.x] !== 0){
+                            ghost.y = ghost.y -1;
+                        }
+                    }
+                }
+            }
+        }
+        else if (ghost.x >pacman.x) {
+            if(field[ghost.y][ghost.x - 1] !== 0 && ghost.x !== 0){
+                ghost.x = ghost.x - 1;
+            } else if(ghost.y < pacman.y){
+                if(field[ghost.y + 1][ghost.x] !== 0){
+                    ghost.y = ghost.y + 1;
+                }
+            } else if(ghost.y > pacman.y){
+                if(field[ghost.y - 1][ghost.x] !== 0){
+                    ghost.y = ghost.y -1;
+                }
+            }
+        }
+        else if(ghost.y < pacman.y){
+            if(field[ghost.y + 1][ghost.x] !== 0){
+                ghost.y = ghost.y + 1;
+            } else if (ghost.x >pacman.x) {
+                if (field[ghost.y][ghost.x - 1] !== 0 && ghost.x !== 0) {
+                    ghost.x = ghost.x - 1;
+                }
+            } else if(ghost.x < pacman.x) {
+                if (field[ghost.y][ghost.x + 1] !== 0 && ghost.x !== 28) {
+                    ghost.x = ghost.x + 1;
+                }
+            }
+        }
+        else if (ghost.x >pacman.x) {
+            if(field[ghost.y][ghost.x - 1] !== 0 && ghost.x !== 0){
+                ghost.x = ghost.x - 1;
+            } else if(ghost.y < pacman.y){
+                if(field[ghost.y + 1][ghost.x] !== 0){
+                    ghost.y = ghost.y + 1;
+                }
+            } else if(ghost.y > pacman.y){
+                if(field[ghost.y - 1][ghost.x] !== 0){
+                    ghost.y = ghost.y -1;
+                }
+            }
+        }
+        else if(ghost.y > pacman.y){
+            if(field[ghost.y - 1][ghost.x] !== 0){
+                ghost.y = ghost.y -1;
+            }  else if (ghost.x >pacman.x) {
+                if(field[ghost.y][ghost.x - 1] !== 0 && ghost.x !== 0){
+                    ghost.x = ghost.x - 1;
+                }
+            } else if(ghost.x < pacman.x) {
+                if (field[ghost.y][ghost.x + 1] !== 0 && ghost.x !== 28) {
+                    ghost.x = ghost.x + 1;
+                }
+            }
+        }
+        else if (ghost.x === pacman.x){
+            if(ghost.y !== pacman.y){
+                if(ghost.x < pacman.x){
+                    if(field[ghost.y][ghost.x + 1] !== 0 && ghost.x !== 28){
+                        ghost.x = ghost.x + 1;
+                    } else if(ghost.y < pacman.y){
+                        if(field[ghost.y + 1][ghost.x] !== 0){
+                            ghost.y = ghost.y + 1;
+                        }
+                    } else if(ghost.y > pacman.y){
+                        if(field[ghost.y - 1][ghost.x] !== 0){
+                            ghost.y = ghost.y -1;
+                        }
+                    }
+                }
+                else if (ghost.x >pacman.x) {
+                    if(field[ghost.y][ghost.x - 1] !== 0 && ghost.x !== 0){
+                        ghost.x = ghost.x - 1;
+                    } else if(ghost.y < pacman.y){
+                        if(field[ghost.y + 1][ghost.x] !== 0){
+                            ghost.y = ghost.y + 1;
+                        }
+                    } else if(ghost.y > pacman.y){
+                        if(field[ghost.y - 1][ghost.x] !== 0){
+                            ghost.y = ghost.y -1;
+                        }
+                    }
+                }
+            }
+        }
+     }
         animateGhost();
-    }
 }
 //szellem animálása
 function animateGhost() {
     $('#ghost').animate({
         top: ghost.y * blockSize,
         left: ghost.x * blockSize
-    }, 0);
+    }, 1, function () {
+        gameArea.find('#pacman').each(function () {
+                if($(this).css('top') === $('#ghost').css('top')
+                    && $(this).css('left') === $('#ghost').css('left')) {
+                    if (lives > 0) {
+                        myMusic.stop();
+                        mySound.play();
+                        lives -= 1;
+                        myMusic.play();
+                        ghost
+                        pacman = {
+                            x: 14,
+                            y: 23
+                        }
+                         ghost = {
+                            x:13,
+                            y:15
+                        }
+                        animateGhost();
+                        animatePac();
+                    } else {
+                        YouLostThisGame();
+                    }
+
+                    $('#lives').text(lives);
+                }});
+    });
 }
 //pacman animálása
 function animatePac(){
@@ -149,11 +292,19 @@ function animatePac(){
                 && $(this).css('left') === $('#pacman').css('left')) {
                 $(this).removeClass('coin');
                 score += 10;
-                if(score === 2450){     //ha a pontszám eléri a maxot, akkor a játékos nyert és hozzáadódik a ranglistához
+                if(score === 2870){     //ha a pontszám eléri a maxot, akkor a játékos nyert és hozzáadódik a ranglistához
                     YouWonThisGame();
-                    var person = prompt("Adja meg a nevét:", "Anonym szeretnék maradni!");
-                    localStorage.setItem(person, Number(score));
-                    FillToplist();
+                }
+                $('#score').text(score);
+            }
+        });
+        gameArea.find('.cherry').each(function () {                           //ha coint talál, akkor "felveszi" és kap 10 pontot
+            if ($(this).css('top') === $('#pacman').css('top')
+                && $(this).css('left') === $('#pacman').css('left')) {
+                $(this).removeClass('cherry');
+                score += 100;
+                if(score === 2870){     //ha a pontszám eléri a maxot, akkor a játékos nyert és hozzáadódik a ranglistához
+                    YouWonThisGame();
                 }
                 $('#score').text(score);
             }
@@ -174,9 +325,6 @@ function animatePac(){
                     animatePac();
                 } else {
                         YouLostThisGame();
-                        let person = prompt("Adja meg a nevét:", "Anonym szeretnék maradni!");
-                        localStorage.setItem(person, Number(score));
-
                 }
 
                 $('#lives').text(lives);
@@ -218,19 +366,15 @@ function backgroundMusic(src) {
 }
 //játék / új játék kezdése amennyiben a New Game gombra rákattintunk
 function startNewGame() {
-    $('#map').css("background-image", "none");          //kezdő oldal beállításainak eltűntetése
-    $('#map').css("margin-left", "500px");
-    $('#main_score').css("display","none");
-    $('#newGame').css("display","none");
-    $('#list').css("display","none");
+    gameScreen();
 
     drawGameArea();                                     //játéktér kirajzolása
     mySound = new sound("losing_lives_music.mp3");      //hangeffekt betöltése
     myMusic = new backgroundMusic("original_music.mp3");    //háttérzene betöltése
     myMusic.play();     //háttérzene elindítása
 
-    setInterval(movePacmanToOtherPosition, 100);  //pacman folytonos mozgatása a megfelelő irányba
-    setInterval(movingGhost, 100);                //szellem folytonos mozgatása
+    setInterval(movePacmanToOtherPosition, 150);  //pacman folytonos mozgatása a megfelelő irányba
+    setInterval(movingGhost, 200);                //szellem folytonos mozgatása
 
     window.addEventListener('keydown', setPacmanDirection, false);
 
@@ -240,19 +384,40 @@ function startNewGame() {
     gameArea.append('<div id="lives_tab">Lives:<span id="lives" style="padding-left: 10px"></span></div>')
     $('#lives').text(lives);
 }
-//függvény a játék elvesztéséhez
+//Játék elvesztése - háttérzene megáll, nevet bekér, local storageban eltároli a pontszámot a névvel,
+//kilistázza a top10-et, DEFEATED kiíratás és pár egyéb css módosítással a gameStoppedScreen() függvényből
 function YouLostThisGame(){
-    gameArea.empty();
     myMusic.stop();
-    gameArea.append('<div id="loser">You lost this game, try again!</div style>');
-    gameArea.append('<button id="newGame">Try Again</button>');
-    $("#newGame").on('click', startNewGame);
+    let person = prompt("Adja meg a nevét:", "Anonym szeretnék maradni!");
+    localStorage.setItem(person, Number(score));
+    FillToplist();
+    gameStopedScreen();
+    gameArea.append('<div id="loser">DEFEATED</div style>');
 }
-//függvény a játék megnyeréséhez
+//Játék elvesztése - háttérzene megáll, nevet bekér, local storageban eltároli a pontszámot a névvel,
+//kilistázza a top10-et, WINNER kiíratás és pár egyéb css módosítással a gameStoppedScreen() függvényből
 function YouWonThisGame(){
-    gameArea.empty();
     myMusic.stop();
-    gameArea.append('<div id="winner">WIN</div style>');
+    let person = prompt("Adja meg a nevét:", "Anonym szeretnék maradni!");
+    localStorage.setItem(person, Number(score));
+    FillToplist();
+    gameStopedScreen();
+    gameArea.append('<div id="winner">WINNER</div style>');
+}
+//New Gamere kattintáskor, játéktér betöltésekor eltűnjönek a felesleges dolgok, gombok, pár css módosítás
+function gameScreen(){
+    $('#map').css("background-image", "none");
+    $('#map').css("margin-left", "500px");
+    $('#main_score').css("display","none");
+    $('#newGame').css("display","none");
+    $('#list').css("display","none");
+    $('#game_helper').css("display","none");
+}
+//Amikor a játék megáll, akkor jelenjenek meg a játéktér főmenüjének beállításai és háttere
+function gameStopedScreen(){
+    $('#map').css("background-image", "url('main_menu_background.png')");
+    $('#map').css("margin-left", "350px");
+
 }
 //toplista kirajzolása és feltöltése
 function FillToplist() {
@@ -279,6 +444,18 @@ function FillToplist() {
         }
     }
 }
+function gameHelper(){
+    gameArea.empty();
+    gameStopedScreen();
+    gameArea.append('<p id=about_my_game>Pac-Man is a maze arcade game developed and released by Namco in 1980. The player controls Pac-Man, who must eat all the coins and cherries inside an enclosed maze while avoiding one colored ghost. <br><br> Pacman controlls: <br><br> W - UP ' +
+        '<br> S - DOWN <br> A - LEFT <br> D - RIGHT </p>');
+    gameArea.append('<button id="back">Back</button>');
+    $(document).ready(function(){
+        $("#back").click(function(){
+            location.reload(true);
+        });
+    });
+}
 
 //az oldal elindításakor betöltődő dolgok, játéktér hozzáadása, New Game és Scores gombok
 $(function () {
@@ -290,4 +467,6 @@ $(function () {
     $("#newGame").on('click', startNewGame);
     gameArea.append('<button id="main_score">Scores</button>');
     $("#main_score").on('click', FillToplist);
+    gameArea.append('<button id="game_helper">About game</button>');
+    $("#game_helper").on('click', gameHelper);
 })
