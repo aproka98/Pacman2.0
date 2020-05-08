@@ -150,7 +150,7 @@ function movePacmanToOtherPosition() {
 }
 //szellem mozgatása
 function movingGhost(){
-    if(lives > 0){
+    if(lives >= 0){
         if(ghost.x < pacman.x){
             if(field[ghost.y][ghost.x + 1] !== 0 && ghost.x !== 28){
                 ghost.x = ghost.x + 1;
@@ -328,7 +328,7 @@ function animatePac(){
                 $('#score').text(score);
             }
         });
-        gameArea.find('.cherry').each(function () {                           //ha coint talál, akkor "felveszi" és kap 10 pontot
+        gameArea.find('.cherry').each(function () {                           //ha cherryt talál, akkor "felveszi" és kap 100 pontot
             if ($(this).css('top') === $('#pacman').css('top')
                 && $(this).css('left') === $('#pacman').css('left')) {
                 $(this).removeClass('cherry');
@@ -352,6 +352,11 @@ function animatePac(){
                         x:14,
                         y:23
                     }
+                    ghost = {
+                        x:13,
+                        y:15
+                    }
+                    animateGhost();
                     animatePac();
                 } else {
                         YouLostThisGame();
@@ -424,7 +429,7 @@ function gameHelper(){
 //kilistázza a top10-et, DEFEATED kiíratás és pár egyéb css módosítással a gameStoppedScreen() függvényből
 function YouLostThisGame(){
     myMusic.stop();
-    let person = prompt("Adja meg a nevét:", "Anonym szeretnék maradni!");
+    let person = prompt("Please tell me your name:", "Nameless");
     localStorage.setItem(person, Number(score));
     FillToplist();
     gameStopedScreen();
@@ -434,7 +439,7 @@ function YouLostThisGame(){
 //kilistázza a top10-et, WINNER kiíratás és pár egyéb css módosítással a gameStoppedScreen() függvényből
 function YouWonThisGame(){
     myMusic.stop();
-    let person = prompt("Adja meg a nevét:", "Anonym szeretnék maradni!");
+    let person = prompt("Please tell me your name:", "Nameless");
     localStorage.setItem(person, Number(score));
     FillToplist();
     gameStopedScreen();
