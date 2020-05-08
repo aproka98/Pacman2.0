@@ -5,35 +5,35 @@ body {
 .wall {
     position: absolute;
     z-index: 0;
-    background-image: url('wall.png');
+    background-image: url('images/wall.png');
     display: inline-block;
 }
 .coin {
     position: absolute;
     z-index: 0;
-    background-image: url('coin.png');
+    background-image: url('images/coin.png');
 }
 .cherry {
     position: absolute;
     z-index: 0;
-    background-image: url('cherry.png');
+    background-image: url('images/cherry.png');
 }
 #ghost {
     position: absolute;
     z-index: 1;
-    background-image: url('ghost.png');
+    background-image: url('images/ghost.png');
 }
 #pacman {
     position: absolute;
     z-index: 1;
-    background-image: url('pacman.png');
+    background-image: url('images/pacman.png');
 }
 #map {
     margin-left: 350px;
     position: absolute;
     width: 1200px;
     height: 930px;
-    background-image: url('main_menu_background.png');
+    background-image: url('images/main_menu_background.png');
 }
 #score_tab {
     color: mintcream;

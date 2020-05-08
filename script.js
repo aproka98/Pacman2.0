@@ -39,7 +39,7 @@ const field = [                 //pálya tömb
     [0,6,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,6,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 ]
-const mapSize = {               //pálya mérete
+const fieldSize = {               //pálya mérete
     x:27,
     y:29
 }
@@ -50,6 +50,37 @@ let pacman = {                  //pacman kiinduló pontja
 let ghost = {                   //szellem kiinduló pontja
     x:13,
     y:15
+}
+//hangeffekt definiálása
+function sound(src) {
+    this.sound = document.createElement("audio");
+    this.sound.src = src;
+    this.sound.setAttribute("preload", "auto");
+    this.sound.setAttribute("controls", "none");
+    this.sound.style.display = "none";
+    document.body.appendChild(this.sound);
+    this.play = function () {
+        this.sound.play();
+    }
+    this.stop = function () {
+        this.sound.pause();
+    }
+}
+//háttérzene definiálása
+function backgroundMusic(src) {
+    this.backgroundMusic = document.createElement("audio");
+    this.backgroundMusic.loop = true;
+    this.backgroundMusic.src = src;
+    this.backgroundMusic.setAttribute("preload", "auto");
+    this.backgroundMusic.setAttribute("controls", "none");
+    this.backgroundMusic.style.display = "none";
+    document.body.appendChild(this.backgroundMusic);
+    this.play = function(){
+        this.backgroundMusic.play();
+    }
+    this.stop = function(){
+        this.backgroundMusic.pause();
+    }
 }
 //pálya tömb bejárása, blokkok hozzáadása, osztály vagy id hozzáadása a blokkokhoz, majd az egész hozzáadása ajátéktérhez
 function drawGameArea(){
@@ -86,10 +117,10 @@ function setPacmanDirection(e) {
 function movePacmanToOtherPosition() {
     //ha a pacman bal oldalt kimenne a pályáról, akkor jobbról jöjjön be (valamiért nem működik, nem tudtam rájönni miért nem)
     if(pacman.x === 0){
-        pacman.x = mapSize.x;
+        pacman.x = fieldSize.x;
     }
     //ha a pacman jobb oldalt kimenne a pályáról, akkor balról jöjjön be
-    if(pacman.x === mapSize.x){
+    if(pacman.x === fieldSize.x){
         pacman.x = 0;
     }
     if (key === 'w') {
@@ -117,7 +148,7 @@ function movePacmanToOtherPosition() {
         }
     }
 }
-//szellem mozgatása - kicsit bután, random számot kap és a szám alapján elindul a hozzárendelt irányba
+//szellem mozgatása
 function movingGhost(){
     if(lives > 0){
         if(ghost.x < pacman.x){
@@ -262,7 +293,6 @@ function animateGhost() {
                         mySound.play();
                         lives -= 1;
                         myMusic.play();
-                        ghost
                         pacman = {
                             x: 14,
                             y: 23
@@ -333,44 +363,12 @@ function animatePac(){
         });
     });
 }
-//hangeffekt definiálása
-function sound(src) {
-    this.sound = document.createElement("audio");
-    this.sound.src = src;
-    this.sound.setAttribute("preload", "auto");
-    this.sound.setAttribute("controls", "none");
-    this.sound.style.display = "none";
-    document.body.appendChild(this.sound);
-    this.play = function () {
-        this.sound.play();
-    }
-    this.stop = function () {
-        this.sound.pause();
-    }
-}
-//háttérzene definiálása
-function backgroundMusic(src) {
-    this.backgroundMusic = document.createElement("audio");
-    this.backgroundMusic.loop = true;
-    this.backgroundMusic.src = src;
-    this.backgroundMusic.setAttribute("preload", "auto");
-    this.backgroundMusic.setAttribute("controls", "none");
-    this.backgroundMusic.style.display = "none";
-    document.body.appendChild(this.backgroundMusic);
-    this.play = function(){
-        this.backgroundMusic.play();
-    }
-    this.stop = function(){
-        this.backgroundMusic.pause();
-    }
-}
 //játék / új játék kezdése amennyiben a New Game gombra rákattintunk
 function startNewGame() {
-    gameScreen();
-
+    gameScreen();                                       //főmenü elrejtése, játékhoz való háttér beállítása
     drawGameArea();                                     //játéktér kirajzolása
-    mySound = new sound("losing_lives_music.mp3");      //hangeffekt betöltése
-    myMusic = new backgroundMusic("original_music.mp3");    //háttérzene betöltése
+    mySound = new sound("musics/losing_lives_music.mp3");      //hangeffekt betöltése
+    myMusic = new backgroundMusic("musics/original_music.mp3");    //háttérzene betöltése
     myMusic.play();     //háttérzene elindítása
 
     setInterval(movePacmanToOtherPosition, 150);  //pacman folytonos mozgatása a megfelelő irányba
@@ -383,6 +381,44 @@ function startNewGame() {
     $('#score').text(score);
     gameArea.append('<div id="lives_tab">Lives:<span id="lives" style="padding-left: 10px"></span></div>')
     $('#lives').text(lives);
+}
+//toplista kirajzolása és feltöltése
+function FillToplist() {
+    gameArea.empty();
+    gameArea.append('<h2>Top 10</h2>');
+    gameArea.append('<p id="list"></p>');
+    gameArea.append('<button id="back">Back</button>');
+    $(document).ready(function(){
+        $("#back").click(function(){
+            location.reload(true);
+        });
+    });
+
+    var data = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        data[i] = [localStorage.key(i), parseInt(localStorage.getItem(localStorage.key(i)))];
+    }
+    data.sort(function (a, b) {
+        return b[1] - a[1];
+    });
+    for (let act_data of data.keys()) {
+        if (act_data < 10) {
+            $('#list').append(data[act_data][0] + ' - ' + data[act_data][1] + '<br><hr>');
+        }
+    }
+}
+//rövid játékleírás, irányítógombok ismertetése
+function gameHelper(){
+    gameArea.empty();
+    gameStopedScreen();
+    gameArea.append('<p id=about_my_game>Pac-Man is a maze arcade game developed and released by Namco in 1980. The player controls Pac-Man, who must eat all the coins and cherries inside an enclosed maze while avoiding one colored ghost. <br><br> Pacman controlls: <br><br> W - UP ' +
+        '<br> S - DOWN <br> A - LEFT <br> D - RIGHT </p>');
+    gameArea.append('<button id="back">Back</button>');
+    $(document).ready(function(){
+        $("#back").click(function(){
+            location.reload(true);
+        });
+    });
 }
 //Játék elvesztése - háttérzene megáll, nevet bekér, local storageban eltároli a pontszámot a névvel,
 //kilistázza a top10-et, DEFEATED kiíratás és pár egyéb css módosítással a gameStoppedScreen() függvényből
@@ -415,48 +451,10 @@ function gameScreen(){
 }
 //Amikor a játék megáll, akkor jelenjenek meg a játéktér főmenüjének beállításai és háttere
 function gameStopedScreen(){
-    $('#map').css("background-image", "url('main_menu_background.png')");
+    $('#map').css("background-image", "url('images/main_menu_background.png')");
     $('#map').css("margin-left", "350px");
 
 }
-//toplista kirajzolása és feltöltése
-function FillToplist() {
-    gameArea.empty();
-    gameArea.append('<h2>Top 10</h2>');
-    gameArea.append('<p id="list"></p>');
-    gameArea.append('<button id="back">Back</button>');
-    $(document).ready(function(){
-        $("#back").click(function(){
-            location.reload(true);
-        });
-    });
-
-    var data = [];
-    for (let i = 0; i < localStorage.length; i++) {
-        data[i] = [localStorage.key(i), parseInt(localStorage.getItem(localStorage.key(i)))];
-    }
-    data.sort(function (a, b) {
-        return b[1] - a[1];
-    });
-    for (let act_data of data.keys()) {
-        if (act_data < 10) {
-            $('#list').append(data[act_data][0] + ' - ' + data[act_data][1] + '<br><hr>');
-        }
-    }
-}
-function gameHelper(){
-    gameArea.empty();
-    gameStopedScreen();
-    gameArea.append('<p id=about_my_game>Pac-Man is a maze arcade game developed and released by Namco in 1980. The player controls Pac-Man, who must eat all the coins and cherries inside an enclosed maze while avoiding one colored ghost. <br><br> Pacman controlls: <br><br> W - UP ' +
-        '<br> S - DOWN <br> A - LEFT <br> D - RIGHT </p>');
-    gameArea.append('<button id="back">Back</button>');
-    $(document).ready(function(){
-        $("#back").click(function(){
-            location.reload(true);
-        });
-    });
-}
-
 //az oldal elindításakor betöltődő dolgok, játéktér hozzáadása, New Game és Scores gombok
 $(function () {
     gameArea = $('<div></div>');
